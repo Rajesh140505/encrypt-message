@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encrypt Message</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203A43, #2c5364);
+      color: white;
+    }
+    .container {
+      width: 90%;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.4);
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      resize: vertical;
+      font-size: 16px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+    label {
+      font-size: 14px;
+    }
+    select {
+      padding: 5px;
+      border-radius: 6px;
+      background: #111;
+      color: white;
+      border: none;
+      margin-left: 10px;
+    }
+    button {
+      background: white;
+      color: black;
+      padding: 10px 25px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover {
+      background: #ddd;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 12px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 18px;
+      color: lightgreen;
+      min-height: 40px;
+      white-space: pre-wrap;
+    }
+    .copy-btn {
+      margin-top: 10px;
+      background: #444;
+      color: white;
+      padding: 6px 15px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Encrypt Message</h2>
+    <textarea id="inputText" rows="4" placeholder="Enter your message"></textarea>
+
+    <div style="margin-top: 15px;">
+      <label for="rails">Select Rows:</label>
+      <select id="rails"></select>
+    </div>
+
+    <button onclick="encryptText()">Encrypt</button>
+
+    <div class="output" id="output"></div>
+    <button class="copy-btn" onclick="copyText()">Copy</button>
+  </div>
+
+  <script>
+    // Populate rails dropdown
+    const railsSelect = document.getElementById("rails");
+    for (let i = 2; i <= 7; i++) {
+      let option = document.createElement("option");
+      option.value = i;
+      option.text = i;
+      railsSelect.appendChild(option);
+    }
+
+    function encryptRailFence(text, rails) {
+      if (rails <= 1) return text;
+      let fence = Array.from({length: rails}, () => []);
+      let rail = 0, dir = 1;
+      for (let char of text) {
+        fence[rail].push(char);
+        rail += dir;
+        if (rail === 0 || rail === rails - 1) dir *= -1;
+      }
+      return fence.flat().join("");
+    }
+
+    function animateOutput(text) {
+      const output = document.getElementById("output");
+      output.textContent = "";
+      let i = 0;
+      let interval = setInterval(() => {
+        output.textContent += text[i];
+        i++;
+        if (i >= text.length) clearInterval(interval);
+      }, 50);
+    }
+
+    function encryptText() {
+      const input = document.getElementById("inputText").value;
+      const rails = parseInt(document.getElementById("rails").value);
+      const encrypted = encryptRailFence(input, rails);
+      animateOutput(encrypted);
+    }
+
+    function copyText() {
+      const text = document.getElementById("output").textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to Clipboard ✅");
+      });
+    }
+  </script>
+</body>
+</html>
